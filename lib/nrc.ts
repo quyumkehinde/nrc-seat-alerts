@@ -88,7 +88,6 @@ export const getStations = cached(STATIC_TTL_MS, async (): Promise<Station[]> =>
   return route?.stations.fromStation ?? []
 })
 
-/** How many days ahead booking is open. */
 export const getMaxBookingDays = cached(STATIC_TTL_MS, async (): Promise<number> => {
   try {
     const { value } = await request<{ value: string }>(

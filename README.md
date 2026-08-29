@@ -1,84 +1,51 @@
 # NRC Seat Alerts
 
-Email alerts for the Lagos–Ibadan train. Pick a trip, get an email the moment
-seats open on [nrc.gsds.ng](https://nrc.gsds.ng).
+Email alerts for the Lagos-Ibadan train. Pick a trip, get an email when seats open on [nrc.gsds.ng](https://nrc.gsds.ng).
 
-Unofficial — not affiliated with the Nigerian Railway Corporation.
+Unofficial. Not affiliated with the Nigerian Railway Corporation.
 
 ## How it works
 
-The NRC booking site is a React SPA over a **public, unauthenticated** JSON API
-at `api.gsds.ng`. No scraping or headless browser is needed:
+The booking site is a React SPA over a **public, unauthenticated** JSON API at `api.gsds.ng`. No scraping, no headless browser:
 
 | Endpoint | Use |
 |---|---|
-| `GET /search/route-wise-stations` | The 9 stations on the Lagos–Ibadan (`LI`) line |
+| `GET /search/route-wise-stations` | The 9 stations on the `LI` line |
 | `GET /search/search-trips?fromStation=&toStation=&travelDate=&routeNumber=LI` | Trips with per-class `availableSeats` |
 | `GET /cs/appConfig/getMaxDaysAllowedForBooking` | Booking window (currently `3` days) |
 
-A Cloudflare Worker hits `/api/cron/poll` every 5 minutes, which calls `search-trips`
-once per unique (from, to, date) across all subscribers, and emails anyone whose
-filters match a coach with `availableSeats > 0`.
+A Cloudflare Worker hits `/api/cron/poll` every 5 minutes. Each run calls `search-trips` once per unique (from, to, date) and emails anyone whose filters match a coach with `availableSeats > 0`.
 
-Alerts are **one-shot**: once you're emailed about a trip, that subscription is
-marked notified and won't fire again. Subscriptions are deleted once their
-travel date passes.
+Alerts fire **once**. The subscription is then marked notified, and deleted after its travel date passes.
 
 ## Setup
 
-1. **Database** — create a Supabase project, run `supabase/schema.sql` in the
-   SQL editor.
-2. **Email** — install **Resend** from the Vercel Marketplace (it provisions the
-   account, verifies your domain, and injects `RESEND_API_KEY`). Set `EMAIL_FROM`
-   to an address on your verified domain. For local testing you can leave
-   `EMAIL_FROM` unset and it falls back to `onboarding@resend.dev`, which only
-   delivers to your own Resend account address.
-3. **Env** — copy `.env.example` to `.env.local` and fill it in.
-4. **Run**
+1. Create a Supabase project and run `supabase/schema.sql`.
+2. Install **Resend** from the Vercel Marketplace. It provisions the account and injects `RESEND_API_KEY`. Point `EMAIL_FROM` at your verified domain; left unset it falls back to `onboarding@resend.dev`, which only delivers to your own Resend address.
+3. Copy `.env.example` to `.env.local` and fill it in.
+4. `npm install && npm run dev`
+5. Deploy to Vercel. Set every var from `.env.example`, generating `CRON_SECRET` with `openssl rand -base64 32`.
+6. Deploy the scheduler: see [`trigger/README.md`](trigger/README.md). It needs the same `CRON_SECRET`.
 
-   ```bash
-   npm install
-   npm run dev
-   ```
+### Why the scheduler is on Cloudflare
 
-5. **Deploy the app** — push to Vercel. Set every var from `.env.example` in
-   the project's environment variables, including a `CRON_SECRET` you generate
-   with `openssl rand -base64 32`.
-6. **Deploy the trigger** — see [`trigger/README.md`](trigger/README.md). Set
-   `POLL_URL` to your deployed `/api/cron/poll` URL and give the Worker the same
-   `CRON_SECRET`.
-
-### Why polling lives on Cloudflare
-
-[Vercel's Hobby plan caps cron at once per day](https://vercel.com/docs/cron-jobs/usage-and-pricing)
-— anything more frequent fails at deploy time, and timing is only guaranteed
-within the hour. Useless for seats that sell out in minutes.
-[Cloudflare's free plan allows 1-minute cron triggers](https://developers.cloudflare.com/workers/platform/pricing/),
-so a ~10-line Worker owns the schedule and the real work stays on Vercel. That
-also keeps the Worker inside the free plan's 10ms CPU budget, since time spent
-awaiting a fetch doesn't count as CPU time.
+[Vercel Hobby caps cron at once per day](https://vercel.com/docs/cron-jobs/usage-and-pricing). Anything more frequent fails at deploy time, and timing only holds within the hour. Useless for seats that sell out in minutes. [Cloudflare's free plan allows 1-minute triggers](https://developers.cloudflare.com/workers/platform/pricing/), so a ~10-line Worker owns the schedule while the work stays on Vercel. Awaiting a fetch is not CPU time, so the Worker stays inside the free 10ms budget.
 
 ## Notes
 
-- **Double opt-in.** Signing up sends a confirmation link and nothing else is
-  ever sent until it's clicked, so the form can't be used to mail-bomb someone.
-- **`/api/cron/poll` is public**, so it fails closed: without `CRON_SECRET`
-  set it refuses to run in production, and with it set it requires a matching
-  bearer token.
-- **Polling politely.** One request per unique leg+date per run, not per
-  subscriber. Please keep it that way.
+- **Double opt-in.** Nothing is sent until the confirmation link is clicked, so the form cannot be used to mail-bomb anyone.
+- **`/api/cron/poll` fails closed.** No `CRON_SECRET` means no polling. With one set, it requires a matching bearer token.
+- **Poll politely.** One request per leg and date per run, never per subscriber.
 
 ## Layout
 
 ```
-app/                UI (page + form) and API routes
-lib/constants.ts    domain constants shared by server and client
-lib/env.ts          validated server-only configuration
-lib/nrc.ts          NRC API client: timeouts, TTL cache, typed errors
-lib/match.ts        the alert rule -- pure, synchronous, unit-tested
-lib/email.ts        Resend templates
-lib/dates.ts        calendar dates on the railway's clock (WAT)
-trigger/            Cloudflare Worker that drives the schedule
+app/            UI and API routes
+lib/nrc.ts      API client: timeouts, TTL cache, typed errors
+lib/match.ts    the alert rule. Pure, synchronous, unit-tested
+lib/dates.ts    calendar dates on the railway's clock (WAT)
+lib/env.ts      validated server-only config
+trigger/        Cloudflare Worker that drives the schedule
 ```
 
 ## Checks
@@ -89,6 +56,4 @@ npm run typecheck
 npm run build
 ```
 
-The tests hit the real API rather than fixtures: the failure worth catching is
-the day the upstream response changes shape. They import `lib/match.ts`
-directly, so what runs in production is what's under test.
+Tests hit the real API rather than fixtures, because the failure worth catching is the day the response changes shape. They import `lib/match.ts` directly, so what ships is what is tested.

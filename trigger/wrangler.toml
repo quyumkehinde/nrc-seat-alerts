@@ -1,0 +1,14 @@
+name = "nrc-seat-alerts-cron"
+main = "src/worker.js"
+compatibility_date = "2026-08-01"
+
+# Cloudflare allows down to 1 minute on the free plan.
+[triggers]
+crons = ["*/5 * * * *"]
+
+[vars]
+# Replace before deploying.
+POLL_URL = "https://your-app.vercel.app/api/cron/poll"
+
+# CRON_SECRET is a secret, not a var. Same value as in Vercel:
+#   npx wrangler secret put CRON_SECRET

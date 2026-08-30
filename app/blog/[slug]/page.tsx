@@ -69,8 +69,8 @@ function Body({ slug }: { slug: string }) {
         <h2>The next seven days</h2>
         <p>
           Which trains run on each of the next seven days, and when they leave.
-          Note that you cannot book all of these yet: tickets are released less
-          than a week ahead.
+          Booking only opens about three days ahead, so the later dates here are
+          for planning; you cannot buy those tickets yet.
         </p>
         <WeekSchedule />
 
@@ -148,14 +148,13 @@ function Body({ slug }: { slug: string }) {
       <h2>How far ahead can you book?</h2>
       <p>
         This is the part that catches most people out. Booking does{" "}
-        <strong>not</strong> open weeks in advance. The NRC site releases a
-        rolling window, and in practice you can only reach dates{" "}
-        <strong>less than a week away</strong>. Search any further out and the
-        site simply returns nothing, which looks like no service rather than
-        what it is: not on sale yet.
+        <strong>not</strong> open weeks in advance. The NRC site works on a
+        rolling window of about <strong>three days</strong>, so in practice you
+        can book today and roughly the next two days.
       </p>
       <p>
-        A date that returns nothing today will usually become bookable within a
+        Timetables for later dates are visible, but those dates are not yet open
+        for booking. A date that shows no seats today will usually open within a
         day or two, and it is worth being ready for that moment.
       </p>
       <h2>Can you cancel or get a refund?</h2>

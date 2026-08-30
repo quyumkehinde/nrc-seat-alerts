@@ -107,8 +107,8 @@ export async function LiveFares() {
             return (
               <tr key={c.coachTypeId}>
                 <td>{c.coachTypeName}</td>
-                <td>{adult ? naira(adult) : "—"}</td>
-                <td>{child ? naira(child) : "—"}</td>
+                <td>{adult ? naira(adult) : "n/a"}</td>
+                <td>{child ? naira(child) : "n/a"}</td>
               </tr>
             );
           })}

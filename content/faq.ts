@@ -2,7 +2,7 @@
 export const FAQ = [
   {
     q: "How far in advance can I book the Lagos-Ibadan train?",
-    a: "Only a few days. The NRC site works on a rolling window and in practice you can only reach dates less than a week away. Searching further ahead returns nothing at all, which means the date is not on sale yet rather than that no train runs.",
+    a: "About three days. The NRC site opens booking on a rolling window, and in practice you can book today and roughly the next two days. Schedules for later dates are visible on the timetable, but those dates are not yet open for booking, which is why searching further ahead shows no seats.",
   },
   {
     q: "How much is a Lagos to Ibadan train ticket?",
@@ -14,7 +14,7 @@ export const FAQ = [
   },
   {
     q: "Why are tickets always sold out?",
-    a: "A date only becomes bookable when it enters the rolling booking window a few days before travel, and popular services are taken within hours of opening. NRC states that all sales are final and the booking system blocks cancellation after payment, so a sold-out date usually stays sold out. The dependable way to get a seat is to be there the moment your date opens.",
+    a: "A date only becomes bookable when it enters the rolling three-day window, and popular services are taken within hours of opening. NRC states that all sales are final and the booking system blocks cancellation after payment, so a sold-out date usually stays sold out. The dependable way to get a seat is to be there the moment your date opens.",
   },
   {
     q: "Is this the official NRC booking site?",

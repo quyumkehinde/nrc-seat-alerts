@@ -48,8 +48,13 @@ export default function AlertForm({
   const earliest = today();
   const latest = addDays(earliest, maxDays + WATCH_HORIZON_DAYS);
 
+  // The timetable shows dates further out than booking actually opens, so seats
+  // can appear on a date nobody can buy yet.
+  const beyondBooking = Boolean(date) && date > addDays(earliest, maxDays);
+
   useEffect(() => {
-    if (!from || !to || !date || sameStation) return setTrips(null);
+    if (!from || !to || !date || sameStation || beyondBooking)
+      return setTrips(null);
     let stale = false;
     setTrips(null);
     fetch(`/api/trips?from=${from}&to=${to}&date=${date}`)
@@ -59,7 +64,7 @@ export default function AlertForm({
     return () => {
       stale = true;
     };
-  }, [from, to, date, sameStation]);
+  }, [from, to, date, sameStation, beyondBooking]);
 
   // Drop a train that isn't running on the new date.
   useEffect(() => {
@@ -188,13 +193,18 @@ export default function AlertForm({
           </div>
         </div>
 
-        {trips && !sameStation && (
+        {!sameStation && (beyondBooking || trips) && (
           <p className="status">
-            {trips.length === 0 ? (
+            {beyondBooking ? (
               <>
                 <span className="dot muted" />
-                Not on sale yet. Tickets are released less than a week ahead,
-                and we&rsquo;ll email you as soon as this date opens.
+                Booking isn't open for this date yet. We'll email you when it
+                opens.
+              </>
+            ) : trips!.length === 0 ? (
+              <>
+                <span className="dot muted" />
+                No train runs on this date.
               </>
             ) : available > 0 ? (
               <>

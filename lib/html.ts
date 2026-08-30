@@ -54,7 +54,7 @@ export function resultPage({
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>${escapeHtml(title)}</title><style>${STYLES}</style></head>
 <body><div class="card">
-<div class="eyebrow">Lagos &#8646; Ibadan</div>
+<div class="eyebrow">Lagos &#8646; Ibadan Train</div>
 <h1>${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p>
 <a class="btn" href="/">Set up another alert</a>
 ${unsubscribe}

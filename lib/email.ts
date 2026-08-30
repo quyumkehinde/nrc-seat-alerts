@@ -25,7 +25,7 @@ const layout = (body: string, footer: string) => `
             max-width:520px;margin:0 auto;padding:32px 24px;color:#0a0a0a">
   <div style="font-size:11px;font-weight:500;letter-spacing:.08em;
               text-transform:uppercase;color:#a1a1a1">
-    Lagos &#8646; Ibadan
+    Lagos &#8646; Ibadan Train
   </div>
   ${body}
   <p style="margin-top:32px;padding-top:16px;border-top:1px solid #e6e6e6;

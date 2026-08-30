@@ -236,3 +236,190 @@ button:disabled {
 .done h1 {
   margin-top: 0;
 }
+
+/* Long-form pages ------------------------------------------------------- */
+
+/* `safe` stops tall pages being clipped at the top by centring. */
+body {
+  align-items: safe center;
+}
+
+.page {
+  width: 100%;
+  max-width: 660px;
+}
+
+.prose h2 {
+  margin: 34px 0 10px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.prose p,
+.prose li {
+  color: var(--muted);
+  font-size: 14.5px;
+}
+
+.prose p {
+  margin: 0 0 12px;
+}
+
+.prose ul {
+  margin: 0 0 12px;
+  padding-left: 18px;
+}
+
+.prose li {
+  margin-bottom: 6px;
+}
+
+.prose strong {
+  color: var(--text);
+  font-weight: 550;
+}
+
+.prose a {
+  color: var(--text);
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 2px;
+}
+
+table {
+  width: 100%;
+  margin: 4px 0 14px;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+th,
+td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+
+th {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+td {
+  color: var(--muted);
+}
+
+td:first-child {
+  color: var(--text);
+}
+
+.scroll-x {
+  overflow-x: auto;
+}
+
+.meta {
+  margin: 0 0 22px;
+  font-size: 12px;
+  color: var(--faint);
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 18px;
+  font-size: 12.5px;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.back:hover {
+  color: var(--text);
+}
+
+.cta {
+  margin: 28px 0 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.cta p {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.cta a {
+  display: inline-block;
+  padding: 9px 16px;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 550;
+  text-decoration: none;
+}
+
+.postlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.postlist li {
+  border-top: 1px solid var(--line);
+}
+
+.postlist a {
+  display: block;
+  padding: 16px 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.postlist h2 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 550;
+}
+
+.postlist p {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+details {
+  border-bottom: 1px solid var(--line);
+}
+
+summary {
+  padding: 12px 0;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  list-style: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+summary::after {
+  content: "+";
+  float: right;
+  color: var(--faint);
+}
+
+details[open] summary::after {
+  content: "−";
+}
+
+details p {
+  margin: 0 0 12px;
+  font-size: 13.5px;
+  color: var(--muted);
+}

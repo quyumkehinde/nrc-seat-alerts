@@ -20,7 +20,7 @@ Alerts fire **once**. The subscription is then marked notified, and deleted afte
 
 ## Setup
 
-1. Create a Supabase project and run `supabase/schema.sql`.
+1. Create a Supabase project and run `supabase/schema.sql`. Copy the **secret** key from Settings > API Keys (`sb_secret_...`), not the publishable one.
 2. Install **Resend** from the Vercel Marketplace. It provisions the account and injects `RESEND_API_KEY`. Point `EMAIL_FROM` at your verified domain; left unset it falls back to `onboarding@resend.dev`, which only delivers to your own Resend address.
 3. Copy `.env.example` to `.env.local` and fill it in.
 4. `npm install && npm run dev`

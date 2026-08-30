@@ -2,8 +2,8 @@ import 'server-only'
 import { createClient } from '@supabase/supabase-js'
 import { env } from './env.ts'
 
-/** Service-role client: bypasses RLS, must never reach the browser. */
-export const db = createClient(env.supabaseUrl, env.supabaseServiceRoleKey, {
+/** Secret key: bypasses RLS, must never reach the browser. */
+export const db = createClient(env.supabaseUrl, env.supabaseSecretKey, {
   auth: { persistSession: false },
 })
 

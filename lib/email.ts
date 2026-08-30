@@ -19,23 +19,25 @@ const unsubscribeUrl = (token: string) =>
 /** Subject lines want the short form. */
 const shortName = (station: string) => station.split(' Station')[0].trim()
 
+// Fixed light palette: dark-mode support across mail clients is unreliable.
 const layout = (body: string, footer: string) => `
 <div style="font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-            max-width:520px;margin:0 auto;padding:32px 24px;color:#14261a">
-  <div style="font-weight:700;font-size:15px;color:#0b6b34;letter-spacing:-.01em">
-    &#128649; NRC Seat Alerts
+            max-width:520px;margin:0 auto;padding:32px 24px;color:#0a0a0a">
+  <div style="font-size:11px;font-weight:500;letter-spacing:.08em;
+              text-transform:uppercase;color:#a1a1a1">
+    Lagos &#8646; Ibadan
   </div>
   ${body}
-  <p style="margin-top:32px;padding-top:16px;border-top:1px solid #e3ebe5;
-            font-size:12px;color:#7c8b81;line-height:1.5">
+  <p style="margin-top:32px;padding-top:16px;border-top:1px solid #e6e6e6;
+            font-size:12px;color:#a1a1a1;line-height:1.5">
     ${footer}<br/>
     An unofficial alerting tool. Not affiliated with the Nigerian Railway Corporation.
   </p>
 </div>`
 
 const button = (href: string, label: string) =>
-  `<a href="${href}" style="display:inline-block;background:#0b6b34;color:#fff;
-     text-decoration:none;padding:12px 22px;border-radius:8px;font-weight:600;font-size:15px">
+  `<a href="${href}" style="display:inline-block;background:#0a0a0a;color:#fff;
+     text-decoration:none;padding:11px 20px;border-radius:10px;font-weight:600;font-size:14px">
      ${label}</a>`
 
 /**
@@ -51,12 +53,12 @@ export async function sendConfirmation(sub: Subscription): Promise<void> {
     subject: 'Confirm your NRC seat alert',
     headers: { 'List-Unsubscribe': `<${unsubscribeUrl(sub.token)}>` },
     html: layout(
-      `<h1 style="font-size:21px;margin:20px 0 8px;letter-spacing:-.02em">Confirm your alert</h1>
-       <p style="font-size:15px;line-height:1.6;color:#3d5347;margin:0 0 8px">
+      `<h1 style="font-size:21px;margin:18px 0 8px;letter-spacing:-.02em;font-weight:600">Confirm your alert</h1>
+       <p style="font-size:15px;line-height:1.6;color:#6f6f6f;margin:0 0 8px">
          You asked to be told when seats open on <strong>${leg}</strong>
          on <strong>${escapeHtml(formatLong(sub.travel_date))}</strong>.
        </p>
-       <p style="font-size:14px;color:#7c8b81;margin:0 0 24px">
+       <p style="font-size:14px;color:#a1a1a1;margin:0 0 24px">
          Train: ${escapeHtml(sub.vehicle_code || 'any')} &middot;
          Class: ${escapeHtml(sub.coach_type_name || 'any')}
        </p>
@@ -77,19 +79,21 @@ export async function sendSeatAlert(
         .map((coach) => {
           const adult = coach.travellerCategory.find((t) => t.name === 'Adult')
           const fare = adult ? ` &middot; ${naira(adult.fareValue)}` : ''
-          return `<div style="font-size:14px;color:#3d5347;padding:2px 0">
-            &bull; <strong>${escapeHtml(coach.coachTypeName)}</strong> &mdash;
-            ${coach.availableSeats} seat${coach.availableSeats === 1 ? '' : 's'}${fare}
+          return `<div style="font-size:14px;color:#6f6f6f;padding:3px 0">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;
+                         background:#15803d;margin-right:7px"></span>
+            <strong style="color:#0a0a0a">${escapeHtml(coach.coachTypeName)}</strong>
+            &middot; ${coach.availableSeats} seat${coach.availableSeats === 1 ? '' : 's'}${fare}
           </div>`
         })
         .join('')
 
-      return `<div style="border:1px solid #d7e5db;border-radius:10px;padding:14px 16px;
-                          margin-bottom:10px;background:#f6fbf7">
+      return `<div style="border:1px solid #e6e6e6;border-radius:12px;padding:14px 16px;
+                          margin-bottom:10px;background:#fafafa">
         <div style="font-weight:600;font-size:15px;margin-bottom:2px">
           ${escapeHtml(trip.vehicleName)}
         </div>
-        <div style="font-size:13px;color:#7c8b81;margin-bottom:8px">
+        <div style="font-size:13px;color:#a1a1a1;margin-bottom:8px">
           ${escapeHtml(trip.vehicleCode)} &middot;
           departs ${escapeHtml(trip.fromStation.departureTime)} &rarr;
           arrives ${escapeHtml(trip.toStation.arrivalTime)}
@@ -110,18 +114,18 @@ export async function sendSeatAlert(
       'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
     },
     html: layout(
-      `<h1 style="font-size:21px;margin:20px 0 8px;letter-spacing:-.02em">Seats just opened up</h1>
-       <p style="font-size:15px;line-height:1.6;color:#3d5347;margin:0 0 18px">
+      `<h1 style="font-size:21px;margin:18px 0 8px;letter-spacing:-.02em;font-weight:600">Seats just opened up</h1>
+       <p style="font-size:15px;line-height:1.6;color:#6f6f6f;margin:0 0 18px">
          <strong>${escapeHtml(`${sub.from_station_name} → ${sub.to_station_name}`)}</strong><br/>
          ${escapeHtml(formatLong(sub.travel_date))}
        </p>
        ${cards}
-       <p style="font-size:13px;color:#7c8b81;margin:14px 0 18px;line-height:1.5">
+       <p style="font-size:13px;color:#a1a1a1;margin:14px 0 18px;line-height:1.5">
          Seats are not held for you and these go fast. This alert fires once,
          so you won't be emailed about this trip again.
        </p>
        ${button('https://nrc.gsds.ng', 'Book on nrc.gsds.ng')}`,
-      `<a href="${unsubscribeUrl(sub.token)}" style="color:#7c8b81">Unsubscribe</a>`
+      `<a href="${unsubscribeUrl(sub.token)}" style="color:#a1a1a1">Unsubscribe</a>`
     ),
   })
 }

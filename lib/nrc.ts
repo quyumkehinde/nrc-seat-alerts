@@ -2,13 +2,15 @@
 // unauthenticated -- the same ones nrc.gsds.ng's own front-end calls.
 
 import { ROUTE_NUMBER } from './constants.ts'
+import { FALLBACK_STATIONS } from './stations.ts'
 
 const BASE_URL = 'https://api.gsds.ng'
 
 /** Never let a slow upstream consume the whole function budget. */
 const REQUEST_TIMEOUT_MS = 10_000
 
-const STATIC_TTL_MS = 60 * 60 * 1000
+const STATIC_TTL_SECONDS = 60 * 60
+const STATIC_TTL_MS = STATIC_TTL_SECONDS * 1000
 const DEFAULT_MAX_BOOKING_DAYS = 3
 
 export type Station = { id: string; name: string; code: string }
@@ -46,11 +48,16 @@ class NrcApiError extends Error {
   }
 }
 
-async function request<T>(path: string): Promise<T> {
+/** Next signals static/dynamic bailouts by throwing; those must never be caught. */
+function isFrameworkSignal(err: unknown): boolean {
+  return typeof (err as { digest?: unknown })?.digest === 'string'
+}
+
+async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const res = await fetch(BASE_URL + path, {
     headers: { Origin: 'https://nrc.gsds.ng', Accept: 'application/json' },
-    cache: 'no-store',
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    ...init,
   })
   if (!res.ok) throw new Error(`NRC ${path}: HTTP ${res.status}`)
 
@@ -60,7 +67,10 @@ async function request<T>(path: string): Promise<T> {
   return body.result as T
 }
 
-/** TTL cache that collapses concurrent misses into one request. */
+/**
+ * TTL cache that collapses concurrent misses into one request and, on failure,
+ * serves the last good value rather than propagating a transient upstream error.
+ */
 function cached<T>(ttlMs: number, load: () => Promise<T>): () => Promise<T> {
   let value: { data: T; expiresAt: number } | undefined
   let inFlight: Promise<T> | undefined
@@ -75,26 +85,47 @@ function cached<T>(ttlMs: number, load: () => Promise<T>): () => Promise<T> {
       .finally(() => {
         inFlight = undefined
       })
-    return inFlight
+
+    try {
+      return await inFlight
+    } catch (err) {
+      if (isFrameworkSignal(err)) throw err
+      if (value) {
+        console.error('nrc: serving stale value after upstream failure', err)
+        return value.data
+      }
+      throw err
+    }
   }
 }
 
-/** Stations on the Lagos-Ibadan line, in travel order. */
+/**
+ * Stations on the Lagos-Ibadan line, in travel order. Falls back to a bundled
+ * snapshot so an upstream outage cannot take the signup page down.
+ */
 export const getStations = cached(STATIC_TTL_MS, async (): Promise<Station[]> => {
-  const routes = await request<
-    { routeId: string; stations: { fromStation: Station[] } }[]
-  >('/search/route-wise-stations')
-  const route = routes.find((r) => r.routeId === ROUTE_NUMBER) ?? routes[0]
-  return route?.stations.fromStation ?? []
+  try {
+    const routes = await request<
+      { routeId: string; stations: { fromStation: Station[] } }[]
+    >('/search/route-wise-stations', { next: { revalidate: STATIC_TTL_SECONDS } })
+    const route = routes.find((r) => r.routeId === ROUTE_NUMBER) ?? routes[0]
+    return route?.stations.fromStation ?? FALLBACK_STATIONS
+  } catch (err) {
+    if (isFrameworkSignal(err)) throw err
+    console.error('nrc: station lookup failed, using bundled snapshot', err)
+    return FALLBACK_STATIONS
+  }
 })
 
 export const getMaxBookingDays = cached(STATIC_TTL_MS, async (): Promise<number> => {
   try {
     const { value } = await request<{ value: string }>(
-      '/cs/appConfig/getMaxDaysAllowedForBooking'
+      '/cs/appConfig/getMaxDaysAllowedForBooking',
+      { next: { revalidate: STATIC_TTL_SECONDS } }
     )
     return Number(value) || DEFAULT_MAX_BOOKING_DAYS
-  } catch {
+  } catch (err) {
+    if (isFrameworkSignal(err)) throw err
     return DEFAULT_MAX_BOOKING_DAYS
   }
 })
@@ -112,7 +143,9 @@ export async function searchTrips(
     routeNumber: ROUTE_NUMBER,
   })
   try {
-    return await request<Trip[]>(`/search/search-trips?${query}`)
+    return await request<Trip[]>(`/search/search-trips?${query}`, {
+      cache: 'no-store',
+    })
   } catch (err) {
     // "No train runs that day" arrives as an error, not an empty success.
     if (err instanceof NrcApiError && err.apiMessage === 'NO_SUCH_TRIP_EXIST') return []

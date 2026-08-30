@@ -12,6 +12,20 @@ const IBADAN = "ec4334a8-2c00-401f-a77e-fc2585fc55d3"; // Moniya
 
 const naira = (n: number) => `₦${n.toLocaleString("en-NG")}`;
 
+/**
+ * Drop the honorific so rows stay narrow. Two stations omit the word
+ * "Station" entirely, so fall back to the final word, which is the place name.
+ */
+const shortStation = (name: string) => {
+  if (/\bStation\b/.test(name)) {
+    return (
+      name.replace(/^.*?\bStation\b\s*/, "").replace(/\s*\bStation\b$/, "").trim() ||
+      name
+    );
+  }
+  return name.split(/\s+/).pop() ?? name;
+};
+
 function duration(from: string, to: string): string {
   const mins = (s: string) => Number(s.slice(0, 2)) * 60 + Number(s.slice(3, 5));
   const total = mins(to) - mins(from);
@@ -118,33 +132,22 @@ export async function LiveFares() {
   );
 }
 
-/** Fares are identical in both directions, so one row covers each pair. */
-const FARE_LEGS: [string, string][] = [
-  ["MJS", "OA"],
-  ["MJS", "PWS"],
-  ["PWS", "OA"],
-  ["BRF", "OA"],
-  ["BRF", "PWS"],
-  ["LA", "OA"],
-];
-
 /**
- * Drop the honorific so rows stay narrow. Two stations omit the word
- * "Station" entirely, so fall back to the final word, which is the place name.
+ * Fares are zoned: every journey falls into one of three price bands, so these
+ * three representative legs cover the whole line. Same in both directions.
  */
-const shortStation = (name: string) => {
-  if (/\bStation\b/.test(name)) {
-    return name.replace(/^.*?\bStation\b\s*/, "").replace(/\s*\bStation\b$/, "").trim() || name;
-  }
-  return name.split(/\s+/).pop() ?? name;
-};
+const FARE_BANDS: { band: string; from: string; to: string }[] = [
+  { band: "Full line, Lagos to Ibadan", from: "MJS", to: "OA" },
+  { band: "Within the Lagos to Abeokuta section", from: "MJS", to: "PWS" },
+  { band: "Within the Abeokuta to Ibadan section", from: "PWS", to: "OA" },
+];
 
 export async function LiveFareMatrix() {
   const stations = await getStations();
   const byCode = new Map(stations.map((s) => [s.code, s]));
 
   const rows = await Promise.all(
-    FARE_LEGS.map(async ([fromCode, toCode]) => {
+    FARE_BANDS.map(async ({ band, from: fromCode, to: toCode }) => {
       const from = byCode.get(fromCode);
       const to = byCode.get(toCode);
       if (!from || !to) return null;
@@ -153,14 +156,14 @@ export async function LiveFareMatrix() {
       const coaches = trips[0]?.coaches;
       if (!coaches?.length) return null;
 
-      const fareFor = (name: string) => {
-        const coach = coaches.find((c) => c.coachTypeName.startsWith(name));
-        return coach?.travellerCategory.find((t) => t.name === "Adult")?.fareValue;
-      };
+      const fareFor = (name: string) =>
+        coaches
+          .find((c) => c.coachTypeName.startsWith(name))
+          ?.travellerCategory.find((t) => t.name === "Adult")?.fareValue;
 
       return {
         key: `${fromCode}-${toCode}`,
-        route: `${shortStation(from.name)} to ${shortStation(to.name)}`,
+        band,
         first: fareFor("First"),
         business: fareFor("Business"),
         standard: fareFor("Standard"),
@@ -170,7 +173,7 @@ export async function LiveFareMatrix() {
 
   const found = rows.filter((r) => r !== null);
   if (!found.length) {
-    return <p>Fares for shorter journeys are unavailable right now.</p>;
+    return <p>Fares are unavailable from the booking system right now.</p>;
   }
 
   return (
@@ -178,7 +181,7 @@ export async function LiveFareMatrix() {
       <table>
         <thead>
           <tr>
-            <th>Route</th>
+            <th>Journey</th>
             <th>First</th>
             <th>Business</th>
             <th>Standard</th>
@@ -187,7 +190,7 @@ export async function LiveFareMatrix() {
         <tbody>
           {found.map((r) => (
             <tr key={r.key}>
-              <td>{r.route}</td>
+              <td>{r.band}</td>
               <td>{r.first ? naira(r.first) : "n/a"}</td>
               <td>{r.business ? naira(r.business) : "n/a"}</td>
               <td>{r.standard ? naira(r.standard) : "n/a"}</td>

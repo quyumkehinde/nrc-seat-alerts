@@ -111,17 +111,16 @@ function Body({ slug }: { slug: string }) {
         </p>
         <h2>Fares for shorter journeys</h2>
         <p>
-          You do not have to travel the full route, and shorter journeys cost
-          less. Fares are zoned rather than measured by distance, so several
-          stations share a price. Travelling between Abeokuta and Ibadan is
-          roughly half the cost of the full run.
+          You do not have to travel the full route. Fares are zoned rather than
+          measured by distance, so despite the nine stations there are only{" "}
+          <strong>three price bands</strong>. Every journey falls into one of
+          them, so the table below covers the whole line.
         </p>
         <LiveFareMatrix />
         <p>
           Fares are identical in both directions, so Ibadan to Abeokuta costs
-          the same as Abeokuta to Ibadan. Prices are per passenger, per leg.
-          Group and voucher bookings are handled separately on the official
-          site.
+          the same as Abeokuta to Ibadan. Prices are per passenger. Group and
+          voucher bookings are handled separately on the official site.
         </p>
         <Cta />
       </>

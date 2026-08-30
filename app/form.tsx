@@ -5,6 +5,8 @@ import type { Station } from "@/lib/nrc";
 import { COACH_CLASSES, WATCH_HORIZON_DAYS } from "@/lib/constants";
 import { addDays, today } from "@/lib/dates";
 
+const BOOKING_URL = "https://nrc.gsds.ng";
+
 type TripOption = {
   code: string;
   name: string;
@@ -191,16 +193,25 @@ export default function AlertForm({
         {trips && !sameStation && (
           <p className="status">
             {trips.length === 0 ? (
-              "No service on this date."
+              <>
+                <span className="dot muted" />
+                Not on sale yet. Tickets are released less than a week ahead,
+                and we&rsquo;ll email you as soon as this date opens.
+              </>
             ) : available > 0 ? (
               <>
                 <span className="dot" />
-                {available} of {trips.length} running with seats now.
+                Seats are available now.{" "}
+                <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
+                  Book on nrc.gsds.ng
+                </a>
+                , no need to wait for an alert.
               </>
             ) : (
               <>
                 <span className="dot muted" />
-                Sold out. We&rsquo;ll watch for releases.
+                Sold out. Tickets cannot be cancelled, so this date is unlikely
+                to reopen.
               </>
             )}
           </p>

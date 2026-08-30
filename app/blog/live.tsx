@@ -113,6 +113,83 @@ export async function LiveFares() {
   );
 }
 
+/** Popular legs, by station code. Fares are the same in both directions. */
+const FARE_LEGS: [string, string][] = [
+  ["MJS", "OA"],
+  ["MJS", "PWS"],
+  ["PWS", "OA"],
+  ["BRF", "OA"],
+  ["BRF", "PWS"],
+  ["LA", "OA"],
+];
+
+/** Strip the honorific so fare rows stay readable. */
+const shortStation = (name: string) =>
+  name
+    .replace(/^.*?Station\s+/, "")
+    .replace(/\s+Station$/, "")
+    .trim() || name;
+
+export async function LiveFareMatrix() {
+  const stations = await getStations();
+  const byCode = new Map(stations.map((s) => [s.code, s]));
+
+  const rows = await Promise.all(
+    FARE_LEGS.map(async ([fromCode, toCode]) => {
+      const from = byCode.get(fromCode);
+      const to = byCode.get(toCode);
+      if (!from || !to) return null;
+
+      const { trips } = await nextServiceDay(from.id, to.id);
+      const coaches = trips[0]?.coaches;
+      if (!coaches?.length) return null;
+
+      const fareFor = (name: string) => {
+        const coach = coaches.find((c) => c.coachTypeName.startsWith(name));
+        return coach?.travellerCategory.find((t) => t.name === "Adult")?.fareValue;
+      };
+
+      return {
+        key: `${fromCode}-${toCode}`,
+        route: `${shortStation(from.name)} to ${shortStation(to.name)}`,
+        first: fareFor("First"),
+        business: fareFor("Business"),
+        standard: fareFor("Standard"),
+      };
+    })
+  );
+
+  const found = rows.filter((r) => r !== null);
+  if (!found.length) {
+    return <p>Fares for shorter journeys are unavailable right now.</p>;
+  }
+
+  return (
+    <div className="scroll-x">
+      <table>
+        <thead>
+          <tr>
+            <th>Route</th>
+            <th>First</th>
+            <th>Business</th>
+            <th>Standard</th>
+          </tr>
+        </thead>
+        <tbody>
+          {found.map((r) => (
+            <tr key={r.key}>
+              <td>{r.route}</td>
+              <td>{r.first ? naira(r.first) : "n/a"}</td>
+              <td>{r.business ? naira(r.business) : "n/a"}</td>
+              <td>{r.standard ? naira(r.standard) : "n/a"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export async function StationList() {
   const stations = await getStations();
   return (

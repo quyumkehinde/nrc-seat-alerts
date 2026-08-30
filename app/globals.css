@@ -59,7 +59,7 @@ body {
 
 .card {
   width: 100%;
-  max-width: 400px;
+  max-width: 700px;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 14px;
@@ -422,4 +422,14 @@ details p {
   margin: 0 0 12px;
   font-size: 13.5px;
   color: var(--muted);
+}
+
+.status a {
+  color: var(--text);
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 2px;
+}
+
+.status a:hover {
+  text-decoration-color: var(--text);
 }

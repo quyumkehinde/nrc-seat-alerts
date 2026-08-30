@@ -5,11 +5,11 @@
 export const FAQ = [
   {
     q: "How far in advance can I book the Lagos-Ibadan train?",
-    a: "The NRC booking site opens a rolling window a few days ahead, currently three days. You cannot book weeks in advance, which is why tickets appear to vanish the moment a new date opens.",
+    a: "Only a few days. The NRC site works on a rolling window and in practice you can only reach dates less than a week away. Searching further ahead returns nothing at all, which means the date is not on sale yet rather than that no train runs.",
   },
   {
     q: "How much is a Lagos to Ibadan train ticket?",
-    a: "First Class is ₦13,000, Business Class ₦6,500 and Standard Class ₦3,600 for an adult. Children pay ₦3,000 in Standard; other classes are the same price as adults.",
+    a: "For the full Lagos to Ibadan run, First Class is ₦13,000, Business Class ₦6,500 and Standard Class ₦3,600 for an adult. Shorter journeys cost less: Abeokuta to Ibadan is ₦6,000, ₦3,000 and ₦2,000. Children pay less in Standard only.",
   },
   {
     q: "How long does the Lagos to Ibadan train take?",
@@ -17,7 +17,7 @@ export const FAQ = [
   },
   {
     q: "Why are tickets always sold out?",
-    a: "A date only becomes bookable when it enters the rolling three-day window, and popular services are taken within hours of opening. NRC states that all sales are final and the booking system blocks cancellation after payment, so a sold-out date usually stays sold out. The dependable way to get a seat is to be there the moment your date opens.",
+    a: "A date only becomes bookable when it enters the rolling booking window a few days before travel, and popular services are taken within hours of opening. NRC states that all sales are final and the booking system blocks cancellation after payment, so a sold-out date usually stays sold out. The dependable way to get a seat is to be there the moment your date opens.",
   },
   {
     q: "Is this the official NRC booking site?",

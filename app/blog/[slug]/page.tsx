@@ -4,7 +4,12 @@ import { notFound } from "next/navigation";
 import { POSTS, findPost } from "@/content/posts";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { formatLong } from "@/lib/dates";
-import { LiveFares, LiveTimetable, StationList } from "../live";
+import {
+  LiveFareMatrix,
+  LiveFares,
+  LiveTimetable,
+  StationList,
+} from "../live";
 
 export const revalidate = 3600;
 
@@ -87,12 +92,19 @@ function Body({ slug }: { slug: string }) {
           margin, so it is usually the last to sell out on a newly opened date.
           First and Business charge the same for children as for adults.
         </p>
-        <h2>Why the price you see may differ</h2>
+        <h2>Fares for shorter journeys</h2>
         <p>
-          Fares are per passenger, per leg. A shorter hop costs the same as the
-          full route in each class, so booking a partial journey does not save
-          money. Group and voucher bookings are handled separately on the
-          official site.
+          You do not have to travel the full route, and shorter journeys cost
+          less. Fares are zoned rather than measured by distance, so several
+          stations share a price. Travelling between Abeokuta and Ibadan is
+          roughly half the cost of the full run.
+        </p>
+        <LiveFareMatrix />
+        <p>
+          Fares are identical in both directions, so Ibadan to Abeokuta costs
+          the same as Abeokuta to Ibadan. Prices are per passenger, per leg.
+          Group and voucher bookings are handled separately on the official
+          site.
         </p>
         <Cta />
       </>
@@ -120,8 +132,14 @@ function Body({ slug }: { slug: string }) {
       <p>
         This is the part that catches most people out. Booking does{" "}
         <strong>not</strong> open weeks in advance. The NRC site releases a
-        rolling window only a few days ahead, currently three days. A date that
-        returns nothing today may be bookable tomorrow.
+        rolling window, and in practice you can only reach dates{" "}
+        <strong>less than a week away</strong>. Search any further out and the
+        site simply returns nothing, which looks like no service rather than
+        what it is: not on sale yet.
+      </p>
+      <p>
+        A date that returns nothing today will usually become bookable within a
+        day or two, and it is worth being ready for that moment.
       </p>
       <h2>Can you cancel or get a refund?</h2>
       <p>

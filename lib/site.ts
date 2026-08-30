@@ -1,4 +1,4 @@
-/** Canonical origin. Must match the deployed domain for OG tags and sitemap. */
+/** Must match the deployed domain: used for canonicals, OG tags and sitemap. */
 export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ||
   process.env.SITE_URL ||

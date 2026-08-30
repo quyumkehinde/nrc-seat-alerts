@@ -10,10 +10,10 @@ import { today } from '@/lib/dates'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60 // Vercel Hobby ceiling.
 
-/** Kept low: the NRC API is a public courtesy. */
+/** Low: the NRC API is a public courtesy. */
 const SEARCH_CONCURRENCY = 4
 
-/** Do less per run rather than risk being killed at maxDuration. */
+/** Do less per run rather than be killed at maxDuration. */
 const MAX_SUBSCRIPTIONS_PER_RUN = 500
 
 type Leg = { from: string; to: string; date: string; subscribers: Subscription[] }
@@ -40,10 +40,7 @@ function groupIntoLegs(subs: Subscription[]): Leg[] {
   return [...legs.values()]
 }
 
-/**
- * Claim before sending. The `is null` guard is atomic, so overlapping runs
- * can never double-send.
- */
+/** The `is null` guard is atomic, so overlapping runs can't double-send. */
 async function claim(sub: Subscription): Promise<boolean> {
   const { data } = await db
     .from(SUBSCRIPTIONS)
@@ -84,8 +81,8 @@ async function alertSubscribers(leg: Leg, trips: Trip[]): Promise<number> {
 }
 
 export async function GET(req: Request) {
-  // Publicly reachable and driven by trigger/, so it fails closed: an unset
-  // secret means no polling, not an open endpoint that burns the email quota.
+  // Publicly reachable, so fail closed: no secret means no polling, not an
+  // open endpoint that burns the email quota.
   const secret = env.cronSecret
   if (!secret) {
     if (env.isProduction) {

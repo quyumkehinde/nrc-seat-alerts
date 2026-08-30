@@ -1,7 +1,4 @@
-/**
- * Shown on the home page and mirrored into FAQPage structured data. Google
- * requires FAQ answers to be visible on the page, so these must stay rendered.
- */
+/** Mirrored into FAQPage schema, which requires the answers stay visible. */
 export const FAQ = [
   {
     q: "How far in advance can I book the Lagos-Ibadan train?",

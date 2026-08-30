@@ -13,7 +13,7 @@ export default async function Home() {
     getMaxBookingDays(),
   ]);
 
-  // Describes the tool to crawlers. Only claims what the page actually offers.
+  // Only claims what the page actually offers.
   const schema = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
@@ -26,7 +26,7 @@ export default async function Home() {
     areaServed: { "@type": "Country", name: "Nigeria" },
   };
 
-  // Mirrors the visible FAQ below; Google requires the answers be on the page.
+  // Must mirror the FAQ rendered below.
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",

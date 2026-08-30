@@ -4,10 +4,7 @@ import { isCalendarDate } from '@/lib/dates'
 
 export const dynamic = 'force-dynamic'
 
-/**
- * Departures for the "any train" dropdown. Cosmetic only: an empty list
- * degrades to "any train", so upstream failures are swallowed.
- */
+/** Cosmetic: an empty list degrades to "any train", so failures are swallowed. */
 export async function GET(req: Request) {
   const params = new URL(req.url).searchParams
   const from = params.get('from')

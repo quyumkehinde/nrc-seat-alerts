@@ -8,5 +8,5 @@ export const RAIL_TIMEZONE = 'Africa/Lagos'
 export const COACH_CLASSES = ['First Class', 'Business Class', 'Standard Class'] as const
 export type CoachClass = (typeof COACH_CLASSES)[number]
 
-/** Booking opens ~3 days out, but the point is to queue the alert before then. */
+/** Watch well past the booking window: the alert should be queued first. */
 export const WATCH_HORIZON_DAYS = 60

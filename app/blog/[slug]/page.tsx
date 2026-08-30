@@ -7,8 +7,9 @@ import { formatLong } from "@/lib/dates";
 import {
   LiveFareMatrix,
   LiveFares,
-  LiveTimetable,
+  StationCallTimes,
   StationList,
+  WeekSchedule,
 } from "../live";
 
 export const revalidate = 3600;
@@ -59,16 +60,32 @@ function Body({ slug }: { slug: string }) {
           The end-to-end journey takes roughly two and a half hours.
         </p>
         <p>
-          <strong>The timetable is not fixed.</strong> The number of daily
-          services and their departure times change from one day to the next,
-          so the tables below are read live from the NRC booking system rather
-          than copied from a printed schedule.
+          <strong>The timetable is not fixed.</strong> Weekday and weekend runs
+          keep different times, and some afternoon services are express, calling
+          at only five stations instead of nine. Everything below is read live
+          from the NRC timetable rather than copied from a printed schedule.
         </p>
-        <LiveTimetable />
+
+        <h2>The next seven days</h2>
+        <p>
+          Which trains run on each of the next seven days, and when they leave.
+          Note that you cannot book all of these yet: tickets are released less
+          than a week ahead.
+        </p>
+        <WeekSchedule />
+
+        <h2>Call times at every station</h2>
+        <p>
+          Open a service to see exactly when it reaches each station along the
+          line. Arrival and departure differ by a few minutes because trains
+          hold briefly at each stop.
+        </p>
+        <StationCallTimes />
+
         <h2>Every station on the line</h2>
         <p>
-          Trains call at up to nine stations. Not every service stops at all of
-          them, and you can book any leg, not just the full route.
+          Trains call at up to nine stations. You can book any leg, not just the
+          full route, and shorter journeys are cheaper.
         </p>
         <StationList />
         <Cta />

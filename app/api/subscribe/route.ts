@@ -72,7 +72,7 @@ export async function POST(req: Request) {
     return invalid('That date is too far ahead.')
   }
 
-  // Resolve against the live list so we never store IDs the API won't accept.
+  // Never store IDs the API won't accept.
   const from = stations.find((s) => s.id === fromStation)
   const to = stations.find((s) => s.id === toStation)
   if (!from || !to) return invalid('Pick both stations.')
@@ -93,8 +93,7 @@ export async function POST(req: Request) {
     .select()
     .single()
 
-  // Already watching this trip: succeed without re-sending mail, which also
-  // stops the form being used to repeatedly email an address.
+  // Succeed without re-sending, so the form can't repeatedly mail an address.
   if (error?.code === UNIQUE_VIOLATION) {
     return NextResponse.json({ ok: true, duplicate: true })
   }

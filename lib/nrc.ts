@@ -1,5 +1,5 @@
-// Client for the NRC e-ticketing API. These endpoints are public and
-// unauthenticated -- the same ones nrc.gsds.ng's own front-end calls.
+// NRC e-ticketing API. Public and unauthenticated: the same endpoints
+// nrc.gsds.ng's own front-end calls.
 
 import { ROUTE_NUMBER } from './constants.ts'
 import { FALLBACK_STATIONS } from './stations.ts'
@@ -23,6 +23,37 @@ export type Coach = {
   travellerCategory: { name: string; fareValue: number }[]
 }
 
+export type ScheduleStop = {
+  sequence: number
+  arrivalTime: string
+  departureTime: string
+  distance: number | null
+  stationName: string
+  stationCode: string
+}
+
+/**
+ * One published service. The same vehicleCode appears more than once with
+ * different day flags, because weekday and weekend runs keep different times
+ * and call at different stations.
+ */
+export type VehicleSchedule = {
+  mon: boolean
+  tue: boolean
+  wed: boolean
+  thu: boolean
+  fri: boolean
+  sat: boolean
+  sun: boolean
+  description: string | null
+  totalTime: number | null
+  totalDistance: number | null
+  vehicleName: string
+  vehicleCode: string
+  routeNumber: string
+  vehicleRouteSchedules: ScheduleStop[] | null
+}
+
 export type Trip = {
   tripId: string
   vehicleName: string
@@ -33,10 +64,9 @@ export type Trip = {
   coaches: Coach[]
 }
 
-/** The API answered, but reported a failure in its envelope. */
+/** The API answered but reported failure in its envelope. */
 class NrcApiError extends Error {
-  // Longhand rather than parameter properties, which Node's type stripping
-  // cannot compile.
+  // Parameter properties would break Node's type stripping.
   readonly path: string
   readonly apiMessage: string
 
@@ -67,10 +97,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   return body.result as T
 }
 
-/**
- * TTL cache that collapses concurrent misses into one request and, on failure,
- * serves the last good value rather than propagating a transient upstream error.
- */
+/** Collapses concurrent misses into one request; serves stale on failure. */
 function cached<T>(ttlMs: number, load: () => Promise<T>): () => Promise<T> {
   let value: { data: T; expiresAt: number } | undefined
   let inFlight: Promise<T> | undefined
@@ -100,8 +127,8 @@ function cached<T>(ttlMs: number, load: () => Promise<T>): () => Promise<T> {
 }
 
 /**
- * Stations on the Lagos-Ibadan line, in travel order. Falls back to a bundled
- * snapshot so an upstream outage cannot take the signup page down.
+ * In travel order. Falls back to a bundled snapshot so an outage upstream
+ * cannot take the signup page down.
  */
 export const getStations = cached(STATIC_TTL_MS, async (): Promise<Station[]> => {
   try {
@@ -130,7 +157,26 @@ export const getMaxBookingDays = cached(STATIC_TTL_MS, async (): Promise<number>
   }
 })
 
-/** Trips for one leg on one date, with live per-class seat counts. */
+/** Published timetable: every service with its station-by-station call times. */
+export const getTimetable = cached(
+  STATIC_TTL_SECONDS * 1000,
+  async (): Promise<VehicleSchedule[]> => {
+    try {
+      const all = await request<VehicleSchedule[]>(
+        '/vs/vehicle-routes/getVehicleTimeTable',
+        { next: { revalidate: STATIC_TTL_SECONDS } }
+      )
+      return all.filter(
+        (v) => v.routeNumber === ROUTE_NUMBER && v.vehicleRouteSchedules?.length
+      )
+    } catch (err) {
+      if (isFrameworkSignal(err)) throw err
+      console.error('nrc: timetable lookup failed', err)
+      return []
+    }
+  }
+)
+
 export async function searchTrips(
   fromStation: string,
   toStation: string,

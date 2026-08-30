@@ -1,8 +1,7 @@
 /**
- * Vercel's Hobby plan only allows once-daily cron, useless for seats that sell
- * out in minutes. This Worker just calls the poll endpoint on a real schedule.
- * Doing no work of its own keeps it inside the free 10ms CPU budget, since
- * time awaiting fetch isn't CPU time.
+ * Vercel Hobby caps cron at once a day, useless here. This Worker only calls
+ * the poll endpoint on a real schedule; awaiting a fetch isn't CPU time, so it
+ * stays inside the free 10ms budget.
  */
 
 async function poll(env) {
@@ -25,7 +24,7 @@ export default {
     ctx.waitUntil(poll(env))
   },
 
-  // Visiting the URL polls immediately -- verifies wiring without waiting.
+  // Polls immediately: verifies wiring without waiting for the schedule.
   async fetch(req, env) {
     try {
       const body = await poll(env)

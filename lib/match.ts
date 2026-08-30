@@ -8,13 +8,13 @@ export type SeatFilters = {
 
 export type TripMatch = {
   trip: Trip
-  /** Only coaches that pass the filter and have seats free. */
+  /** Only those matching the filter with seats free. */
   coaches: Coach[]
 }
 
 /**
- * The alert rule: which trips a subscriber should be told about right now.
- * Pure and synchronous so it can be tested without network or database.
+ * The alert rule. Pure and synchronous so it is testable without network
+ * or database.
  */
 export function findMatches(filters: SeatFilters, trips: Trip[]): TripMatch[] {
   const matches: TripMatch[] = []

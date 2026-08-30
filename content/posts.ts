@@ -1,19 +1,19 @@
 export type Post = {
   slug: string
   title: string
-  /** Meta description and blog-index summary. Keep under ~155 characters. */
+  /** Meta description. Keep under ~155 characters. */
   description: string
   published: string
   h1: string
 }
 
-/** Ordered newest first. Bodies live in app/blog/[slug]/page.tsx. */
+/** Bodies live in app/blog/[slug]/page.tsx. */
 export const POSTS: Post[] = [
   {
     slug: "lagos-ibadan-train-schedule",
     title: "Lagos-Ibadan Train Schedule and Timetable",
     description:
-      "Live Lagos-Ibadan train departure times, journey duration and every station on the line, read straight from the NRC booking system.",
+      "Lagos-Ibadan train times for the next seven days, with exact call times at every station, read live from the NRC timetable.",
     published: "2026-08-30",
     h1: "Lagos-Ibadan train schedule and timetable",
   },

@@ -44,12 +44,10 @@ export default function AlertForm({
 
   const sameStation = from === to;
 
-  // Watch further ahead than booking opens: the alert should already be
-  // queued when seats are released.
+  // Watch past the booking window: queue the alert before seats are released.
   const earliest = today();
   const latest = addDays(earliest, maxDays + WATCH_HORIZON_DAYS);
 
-  // Real departures, so the time picker isn't guesswork.
   useEffect(() => {
     if (!from || !to || !date || sameStation) return setTrips(null);
     let stale = false;
@@ -63,7 +61,7 @@ export default function AlertForm({
     };
   }, [from, to, date, sameStation]);
 
-  // Drop a chosen train that isn't running on the new date.
+  // Drop a train that isn't running on the new date.
   useEffect(() => {
     if (vehicleCode && trips && !trips.some((t) => t.code === vehicleCode)) {
       setVehicleCode("");

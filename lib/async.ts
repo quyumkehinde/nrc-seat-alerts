@@ -1,4 +1,3 @@
-/** Map with a ceiling on in-flight work. */
 export async function mapWithLimit<T, R>(
   items: readonly T[],
   limit: number,

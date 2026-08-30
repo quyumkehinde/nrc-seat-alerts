@@ -14,7 +14,7 @@ export const env = {
   get supabaseUrl() {
     return required("SUPABASE_URL");
   },
-  /** Accepts the legacy service_role key until it is retired. */
+  /** Falls back to the legacy service_role key until it is retired. */
   get supabaseSecretKey() {
     const key = process.env.SUPABASE_SECRET_KEY;
     if (!key) throw new Error("Missing SUPABASE_SECRET_KEY. See .env.example.");
@@ -23,7 +23,7 @@ export const env = {
   get resendApiKey() {
     return required("RESEND_API_KEY");
   },
-  /** Falls back to Resend's shared test sender, which only reaches your own address. */
+  /** Resend's test sender only delivers to your own account address. */
   get emailFrom() {
     return process.env.EMAIL_FROM || "NRC Seat Alerts <onboarding@resend.dev>";
   },

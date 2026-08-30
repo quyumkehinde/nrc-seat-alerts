@@ -16,7 +16,6 @@ const confirmUrl = (token: string) =>
 const unsubscribeUrl = (token: string) =>
   `${env.siteUrl}/api/unsubscribe?token=${encodeURIComponent(token)}`
 
-/** Subject lines want the short form. */
 const shortName = (station: string) => station.split(' Station')[0].trim()
 
 // Fixed light palette: dark-mode support across mail clients is unreliable.
@@ -40,10 +39,7 @@ const button = (href: string, label: string) =>
      text-decoration:none;padding:11px 20px;border-radius:10px;font-weight:600;font-size:14px">
      ${label}</a>`
 
-/**
- * Double opt-in step one. Nothing further is sent until this link is clicked,
- * so the public form can't be used to mail-bomb anyone.
- */
+/** Double opt-in: nothing further is sent until this link is clicked. */
 export async function sendConfirmation(sub: Subscription): Promise<void> {
   const leg = escapeHtml(`${sub.from_station_name} → ${sub.to_station_name}`)
 
@@ -68,7 +64,6 @@ export async function sendConfirmation(sub: Subscription): Promise<void> {
   })
 }
 
-/** Seats exist right now for a trip someone is watching. */
 export async function sendSeatAlert(
   sub: Subscription,
   matches: TripMatch[]

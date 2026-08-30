@@ -1,6 +1,6 @@
 /**
- * The real alert rule against live NRC payloads. Live rather than fixtures on
- * purpose: the point is catching the day the API changes shape. `npm test`.
+ * Live payloads rather than fixtures on purpose: the point is catching the
+ * day the API changes shape.
  */
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -12,7 +12,7 @@ const MONIYA = 'ec4334a8-2c00-401f-a77e-fc2585fc55d3'
 
 const any = { vehicleCode: '', coachType: '' }
 
-/** A date with seats and one without, from inside the booking window. */
+/** A date with seats and one without. */
 async function findDates() {
   const start = new Date()
   let soldOut: Trip[] | undefined

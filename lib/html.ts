@@ -1,4 +1,3 @@
-/** Escape untrusted text for interpolation into HTML. */
 export function escapeHtml(value: string): string {
   return value.replace(
     /[&<>"']/g,
@@ -31,7 +30,7 @@ a.btn{display:block;margin-top:22px;padding:10px;text-align:center;text-decorati
 a.quiet{display:block;margin-top:14px;color:var(--faint);font-size:12px;text-decoration:none}
 a.quiet:hover{color:var(--muted)}`;
 
-/** Opened straight from an email client, so it carries its own styles. */
+/** Opened from an email client, so it carries its own styles. */
 export function resultPage({
   title,
   message,

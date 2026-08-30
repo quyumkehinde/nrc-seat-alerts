@@ -7,7 +7,6 @@ compatibility_date = "2026-08-01"
 crons = ["*/5 * * * *"]
 
 [vars]
-# Replace before deploying.
 POLL_URL = "https://nrcseatalerts.com/api/cron/poll"
 
 # CRON_SECRET is a secret, not a var. Same value as in Vercel:

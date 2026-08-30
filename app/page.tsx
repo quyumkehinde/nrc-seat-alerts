@@ -15,27 +15,27 @@ export default async function Home() {
 
   // Describes the tool to crawlers. Only claims what the page actually offers.
   const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'WebApplication',
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
     name: SITE_NAME,
     url: SITE_URL,
     description: SITE_DESCRIPTION,
-    applicationCategory: 'TravelApplication',
-    operatingSystem: 'Any',
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'NGN' },
-    areaServed: { '@type': 'Country', name: 'Nigeria' },
-  }
+    applicationCategory: "TravelApplication",
+    operatingSystem: "Any",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "NGN" },
+    areaServed: { "@type": "Country", name: "Nigeria" },
+  };
 
   // Mirrors the visible FAQ below; Google requires the answers be on the page.
   const faqSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
     mainEntity: FAQ.map(({ q, a }) => ({
-      '@type': 'Question',
+      "@type": "Question",
       name: q,
-      acceptedAnswer: { '@type': 'Answer', text: a },
+      acceptedAnswer: { "@type": "Answer", text: a },
     })),
-  }
+  };
 
   return (
     <main className="card">
@@ -48,11 +48,6 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <div className="eyebrow">Lagos ⇄ Ibadan Train</div>
-      <h1>Know the moment a seat opens</h1>
-      <p className="lede">
-        The train sells out fast. Tell us the trip you want and we&rsquo;ll
-        email you as soon as seats are free.
-      </p>
 
       <AlertForm stations={stations} maxDays={maxDays} />
 

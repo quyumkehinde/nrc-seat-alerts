@@ -1,93 +1,238 @@
 :root {
   color-scheme: light dark;
-  --bg: #f6fbf7;
-  --card: #ffffff;
-  --line: #d7e5db;
-  --text: #14261a;
-  --muted: #7c8b81;
-  --sub: #3d5347;
-  --green: #0b6b34;
-  --green-hi: #0e8341;
-  --err: #b3261e;
+
+  --bg: #fafafa;
+  --surface: #fff;
+  --field: #fff;
+  --text: #0a0a0a;
+  --muted: #6f6f6f;
+  --faint: #a1a1a1;
+  --line: #e6e6e6;
+  --line-strong: #d4d4d4;
+
+  --btn-bg: #0a0a0a;
+  --btn-fg: #fff;
+
+  /* Reserved for meaning, never decoration. */
+  --ok: #15803d;
+  --danger: #c2321f;
+
+  --radius: 10px;
 }
+
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0d1510; --card: #141f18; --line: #24352a;
-    --text: #e8f2ea; --muted: #8fa396; --sub: #a9bdb0;
-    --green: #1a9b52; --green-hi: #22b25f; --err: #ff8a80;
+    --bg: #0a0a0a;
+    --surface: #111;
+    --field: #171717;
+    --text: #f5f5f5;
+    --muted: #9a9a9a;
+    --faint: #6f6f6f;
+    --line: #242424;
+    --line-strong: #333;
+
+    --btn-bg: #fafafa;
+    --btn-fg: #0a0a0a;
+
+    --ok: #4ade80;
+    --danger: #f87171;
   }
 }
-* { box-sizing: border-box }
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  padding: 24px;
+  padding: 32px 20px;
   min-height: 100svh;
   display: grid;
   place-items: center;
   background: var(--bg);
   color: var(--text);
-  font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
+
 .card {
   width: 100%;
-  max-width: 440px;
-  background: var(--card);
+  max-width: 400px;
+  background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 30px 28px;
-  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  border-radius: 14px;
+  padding: 28px;
 }
-.brand { font-size: 13px; font-weight: 700; color: var(--green); letter-spacing: -.01em }
-h1 { font-size: 23px; margin: 10px 0 6px; letter-spacing: -.025em; line-height: 1.25 }
-.lede { color: var(--sub); font-size: 14.5px; margin: 0 0 22px }
-label { display: block; font-size: 13px; font-weight: 600; margin: 0 0 6px; color: var(--sub) }
-.opt { font-weight: 400; color: var(--muted) }
-.field { margin-bottom: 15px }
-.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
-input, select {
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+h1 {
+  margin: 14px 0 6px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.lede {
+  margin: 0 0 24px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* Form */
+
+.field {
+  margin-bottom: 14px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.opt {
+  font-weight: 400;
+  color: var(--faint);
+}
+
+input,
+select {
   width: 100%;
-  padding: 10px 12px;
+  height: 38px;
+  padding: 0 11px;
   font: inherit;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--text);
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 9px;
+  background: var(--field);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
   appearance: none;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
 }
-select { background-image: none }
-input:focus, select:focus {
-  outline: 2px solid var(--green);
-  outline-offset: -1px;
-  border-color: transparent;
+
+input::placeholder {
+  color: var(--faint);
 }
+
+/* appearance:none strips the native arrow, so draw one back. */
+select {
+  padding-right: 30px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%236f6f6f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+}
+
+input:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-color: var(--text);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--text) 12%, transparent);
+}
+
 button {
   width: 100%;
-  margin-top: 8px;
-  padding: 12px;
+  height: 40px;
+  margin-top: 6px;
   font: inherit;
-  font-size: 15px;
-  font-weight: 650;
-  color: #fff;
-  background: var(--green);
+  font-size: 14px;
+  font-weight: 550;
+  color: var(--btn-fg);
+  background: var(--btn-bg);
   border: 0;
-  border-radius: 9px;
+  border-radius: var(--radius);
   cursor: pointer;
+  transition: opacity 0.12s ease;
 }
-button:hover:not(:disabled) { background: var(--green-hi) }
-button:disabled { opacity: .55; cursor: default }
+
+button:hover:not(:disabled) {
+  opacity: 0.86;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .swap {
-  background: none; border: 0; color: var(--green); cursor: pointer;
-  font-size: 12.5px; font-weight: 600; padding: 0; width: auto; margin: 0;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
 }
-.swap:hover { text-decoration: underline; background: none }
-.msg { margin-top: 14px; font-size: 14px; text-align: center; line-height: 1.5 }
-.msg.err { color: var(--err) }
+
+.swap:hover:not(:disabled) {
+  background: none;
+  color: var(--text);
+  opacity: 1;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.err {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--danger);
+}
+
+.status {
+  margin: -4px 0 14px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* Availability dot: the only place colour carries meaning. */
+.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--ok);
+  vertical-align: middle;
+}
+
+.dot.muted {
+  background: var(--faint);
+}
+
 .foot {
-  margin: 24px 0 0; padding-top: 15px; border-top: 1px solid var(--line);
-  font-size: 12px; color: var(--muted); text-align: center; line-height: 1.5;
+  margin: 22px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--faint);
 }
-.done { text-align: center; padding: 8px 0 }
-.done .tick { font-size: 34px; line-height: 1 }
-.done h1 { margin-top: 14px }
+
+.foot a {
+  color: var(--muted);
+}
+
+.done h1 {
+  margin-top: 0;
+}

@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "NRC Seat Alerts — Lagos ⇄ Ibadan",
+  title: "Seat Alerts · Lagos ⇄ Ibadan",
   description:
-    "Get an email the moment seats open up on the Lagos - Ibadan train. Unofficial.",
+    "Get an email the moment seats open on the Lagos-Ibadan train. Unofficial.",
 };
 
 export default function RootLayout({
@@ -13,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <body>{children}</body>
     </html>
   );

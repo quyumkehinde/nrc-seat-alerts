@@ -34,3 +34,22 @@ create index if not exists subscriptions_pending
 
 -- All access goes through the service-role key in API routes.
 alter table subscriptions enable row level security;
+
+-- Fix forward: retain unsubscribed records instead of deleting them.
+alter table subscriptions
+  add column if not exists unsubscribed_at timestamptz;
+
+drop index if exists subscriptions_unique_pref;
+create unique index subscriptions_unique_pref
+  on subscriptions (
+    lower(email), from_station_id, to_station_id,
+    travel_date, vehicle_code, coach_type_name
+  )
+  where unsubscribed_at is null;
+
+drop index if exists subscriptions_pending;
+create index subscriptions_pending
+  on subscriptions (travel_date)
+  where confirmed_at is not null
+    and notified_at is null
+    and unsubscribed_at is null;

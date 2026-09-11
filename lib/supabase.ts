@@ -27,4 +27,5 @@ export type Subscription = {
   token: string
   confirmed_at: string | null
   notified_at: string | null
+  unsubscribed_at: string | null
 }

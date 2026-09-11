@@ -96,14 +96,12 @@ export async function GET(req: Request) {
 
   const date = today()
 
-  // Departed trains can never fire again.
-  await db.from(SUBSCRIPTIONS).delete().lt('travel_date', date)
-
   const { data: subs, error } = await db
     .from(SUBSCRIPTIONS)
     .select('*')
     .not('confirmed_at', 'is', null)
     .is('notified_at', null)
+    .is('unsubscribed_at', null)
     .gte('travel_date', date)
     .order('created_at', { ascending: true })
     .limit(MAX_SUBSCRIPTIONS_PER_RUN)

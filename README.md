@@ -16,7 +16,7 @@ The booking site is a React SPA over a **public, unauthenticated** JSON API at `
 
 A Cloudflare Worker hits `/api/cron/poll` every 5 minutes. Each run calls `search-trips` once per unique (from, to, date) and emails anyone whose filters match a coach with `availableSeats > 0`.
 
-Alerts fire **once**. The subscription is then marked notified, and deleted after its travel date passes.
+Alerts fire **once**. The subscription is then marked notified. Subscriptions are retained after their travel date passes, and unsubscribing timestamps the record instead of deleting it.
 
 ## Setup
 

@@ -35,6 +35,13 @@ export async function GET(req: Request) {
     })
   }
 
+  if (subscription.unsubscribed_at) {
+    return resultPage({
+      title: 'Alert removed',
+      message: 'This alert has been unsubscribed.',
+    })
+  }
+
   // Re-opening the link is harmless.
   if (!subscription.confirmed_at) {
     await db

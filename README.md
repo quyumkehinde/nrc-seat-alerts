@@ -23,9 +23,10 @@ Alerts fire **once**. The subscription is then marked notified. Subscriptions ar
 1. Create a Supabase project and run `supabase/schema.sql`. Copy the **secret** key from Settings > API Keys (`sb_secret_...`), not the publishable one.
 2. Install **Resend** from the Vercel Marketplace. It provisions the account and injects `RESEND_API_KEY`. Point `EMAIL_FROM` at your verified domain; left unset it falls back to `onboarding@resend.dev`, which only delivers to your own Resend address.
 3. Copy `.env.example` to `.env.local` and fill it in.
-4. `npm install && npm run dev`
-5. Deploy to Vercel. Set every var from `.env.example`, generating `CRON_SECRET` with `openssl rand -base64 32`.
-6. Deploy the scheduler: see [`trigger/README.md`](trigger/README.md). It needs the same `CRON_SECRET`.
+4. In Google Analytics, create a GA4 property and web data stream. Set its `G-...` measurement ID as `NEXT_PUBLIC_GOOGLE_ANALYTICS_ID`; leave it empty to disable analytics. Keep Enhanced Measurement's browser-history page changes enabled so client-side navigation is counted.
+5. `npm install && npm run dev`
+6. Deploy to Vercel. Set every var from `.env.example`, generating `CRON_SECRET` with `openssl rand -base64 32`.
+7. Deploy the scheduler: see [`trigger/README.md`](trigger/README.md). It needs the same `CRON_SECRET`.
 
 ### Why the scheduler is on Cloudflare
 
